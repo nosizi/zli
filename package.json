@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "clean": "rimraf ./dist/",
-    "build": "npm run clean && tsc"
+    "build": "npm run clean && tsc && npm link"
   },
   "bin": {
-    "@oh": "dist/oh.js"
+    "@oh": "dist/oh.js",
+    "@test": "dist/test.js"
   },
   "repository": {
     "type": "git",
