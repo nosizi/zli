@@ -6,8 +6,8 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "rootDir": "./src",
     "outDir": "dist",
   },
-  "include": ["./src"]
+  "include": ["./scripts"],
+  "exclude": ["./dist", "./node_module"]
 }
