@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-const pkg = require('../package.json')
+import fs from 'fs'
 
-import lint from '../scripts/lint'
+const pkgJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url)))
+
+import lint from '../scripts/lint.js'
 
 const program = new Command()
-program.name('@oh').version(pkg.version, '-v --version')
+program.name('@oh').version(pkgJson.version, '-v --version')
 
 program
   .command('create [project-name]')
