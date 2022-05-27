@@ -1,33 +1,35 @@
 {
-  "name": "@nsz/lint",
-  "version": "0.0.2",
+  "name": "@nsz/zli",
+  "version": "0.1.0",
   "description": "My lint utils.",
-  "main": "dist/index.js",
-  "type": "module",
+  "main": "bin/run.js",
   "scripts": {
     "clean": "rimraf ./dist/",
     "build": "npm run clean && tsc"
   },
   "bin": {
-    "@oh": "./bin/run.js"
+    "zi": "./bin/run.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nosizi/oh-lint.git"
+    "url": "git+https://github.com/nosizi/zli.git"
   },
   "keywords": [
     "stylelint",
     "eslint",
     "prettier",
     "js lint",
-    "css lint"
+    "css lint",
+    "editorconfig",
+    "husky",
+    "lint-staged"
   ],
   "author": "nosizi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nosizi/oh-lint/issues"
+    "url": "https://github.com/nosizi/zli/issues"
   },
-  "homepage": "https://github.com/nosizi/oh-lint#readme",
+  "homepage": "https://github.com/nosizi/zli#readme",
   "dependencies": {
     "commander": "^9.2.0",
     "eslint": "^8.15.0",

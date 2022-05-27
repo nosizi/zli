@@ -1,13 +1,11 @@
 #!/usr/bin/env node
-import { Command } from 'commander'
-import fs from 'fs'
+const { Command } = require('commander')
+const fs = require('fs')
 
 const pkgJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url)))
 
-import lint from '../scripts/lint.js'
-
 const program = new Command()
-program.name('@oh').version(pkgJson.version, '-v --version')
+program.name('zi').version(pkgJson.version, '-v --version')
 
 program
   .command('create [project-name]')
@@ -17,10 +15,5 @@ program
     console.log(name, options);
   })
 
-program
-  .command('lint')
-  .description('lint files')
-  .option('--staged', 'linters on files')
-  .action(lint)
 
 program.parse(process.argv)
