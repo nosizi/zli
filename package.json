@@ -32,7 +32,10 @@
   "homepage": "https://github.com/nosizi/zli#readme",
   "dependencies": {
     "commander": "^9.2.0",
+    "cross-spawn": "^7.0.3",
     "eslint": "^8.15.0",
+    "execa": "^1.0.0",
+    "inquirer": "^8.2.4",
     "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
     "stylelint": "^14.8.2"
