@@ -2,10 +2,13 @@ const inquirer = require("inquirer");
 const fs = require("fs");
 const path = require("path");
 const execa = require("execa");
+const chalk = require('chalk')
+
+const pkgFilePath = path.resolve(process.cwd(), "./package.json")
 
 function getTargetPkgJsonOnParse() {
   return JSON.parse(
-    fs.readFileSync(path.resolve(process.cwd(), "./package.json"), {
+    fs.readFileSync(pkgFilePath, {
       encoding: "utf8",
     })
   );
@@ -76,6 +79,11 @@ function initAction() {
     ])
     .then(async (answers) => {
       const { tsconfig, husky } = answers;
+
+      if (!fs.existsSync(pkgFilePath)) {
+        chalk.red('This project initial not yet by npm init. Please execute command `npm init`')
+        return
+      }
 
       let finalDeps = [];
       let finalDevDeps = [];
