@@ -6,7 +6,7 @@ const chalk = require('chalk')
 
 const pkgFilePath = path.resolve(__dirname, '..', "./package.json")
 const hasPackageJson = fs.existsSync(pkgFilePath)
-const dependencise = {
+const dependencies = {
   devDeps: [],
   deps: []
 }
@@ -157,13 +157,22 @@ function generateFrameworkDeps(answer) {
       deps: [],
     },
   }
-  dependencise.deps = [
-    ...dependencise.deps,
+  dependencies.deps = [
+    ...dependencies.deps,
     ...map[answer].deps,
   ]
-  dependencise.devDeps = [
-    ...dependencise.devDeps,
+  dependencies.devDeps = [
+    ...dependencies.devDeps,
     ...map[answer].devDeps,
+  ]
+}
+
+function generateTSWithFramework(answer) {
+  const reactDevDeps = [
+    '@types/react',
+  ]
+  const vueDevDeps = [
+    '@types/vue'
   ]
 }
 
@@ -194,7 +203,7 @@ async function initAction() {
   console.log(theAnswer);
   // Object.keys(theAnswer).forEach((key) => {
   // })
-  generateFrameworkDeps()
+  generateFrameworkDeps(theAnswer.framework)
 
 
   // inquirer.prompt([
