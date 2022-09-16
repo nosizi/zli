@@ -4,7 +4,16 @@ const path = require("path");
 const execa = require("execa");
 const chalk = require('chalk')
 
-const pkgFilePath = path.resolve(process.cwd(), "./package.json")
+const pkgFilePath = path.resolve(__dirname, '..', "./package.json")
+const hasPackageJson = fs.existsSync(pkgFilePath)
+const dependencise = {
+  devDeps: [],
+  deps: []
+}
+
+let theAnswer = {
+  hasPackageJson,
+}
 
 function getTargetPkgJsonOnParse() {
   return JSON.parse(
@@ -55,65 +64,196 @@ function setTsConfigFile(flag) {
   );
 }
 
-function initAction() {
-  inquirer
-    .prompt([
-      // {
-      //   type: 'confirm',
-      //   name: 'husky',
-      //   message: 'husky?',
-      // },
-      // {
-      //   type: 'confirm',
-      //   name: 'lint-staged',
-      //   message: 'lint-staged?',
-      // },
-      {
-        type: "list",
-        name: "tsconfig",
-        message:
-          "tsconfig.json? Choose and install typescript or not. If your dependencies doesn't have typescript and it will be install.",
-        choices: ["No", "JavaScript", "Node"],
-        default: "No",
-      },
-    ])
-    .then(async (answers) => {
-      const { tsconfig, husky } = answers;
+async function askFramework() {
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'framework',
+      message: 'What framework your?',
+      choices: ['React', 'Vue', 'Node', 'Vanilla'],
+      default: 'Vanilla',
+    },
+  ])
+}
 
-      if (!fs.existsSync(pkgFilePath)) {
-        chalk.red('This project initial not yet by npm init. Please execute command `npm init`')
-        return
-      }
+async function askTypescript() {
+  return inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'typescript',
+      message: 'Did you need Typescript?',
+    },
+  ])
+}
 
-      let finalDeps = [];
-      let finalDevDeps = [];
+async function askESLint() {
+  return inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'eslint',
+      message: 'Did you need ESLint?',
+    },
+  ])
+}
 
-      if (husky) {
-        finalDevDeps = ["husky"];
-      }
+async function askESLintStyle() {
+  return inquirer.prompt([
+    {
+      type: 'list',
+      name: 'eslintStyle',
+      message: 'Which style guide for your ESLint?',
+      choices: ['Airbnb', 'Standard', 'default'],
+      default: 'Airbnb',
+    },
+  ])
+}
 
-      let tsDeps = {};
-      if (tsconfig && tsconfig !== "No") {
-        tsDeps = getTsDependencies(tsconfig === "Node");
-      }
-      console.log(tsDeps);
+async function askStylelint() {
+  return inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'stylelint',
+      message: 'Did you need stylelint?',
+    },
+  ])
+}
 
-      if (Reflect.has(tsDeps, "depArgs") && tsDeps.depArgs.length) {
-        finalDeps = [...finalDeps, ...tsDeps.depArgs];
-      }
+async function askPrettier() {
+  return inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'prettier',
+      message: 'Did you need Prettier?',
+    },
+  ])
+}
 
-      if (Reflect.has(tsDeps, "devDepArgs") && tsDeps.devDepArgs.length) {
-        finalDevDeps = [...finalDevDeps, ...tsDeps.devDepArgs];
-      }
+async function askHusky() {
+  return inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'husky',
+      message: 'Did you need git husky? It will add husky and lint-staged config.',
+    }
+  ])
+}
 
-      if (finalDeps.length) {
-        await execa("npm", ["install", "--save", ...finalDeps]);
-      }
+function generateFrameworkDeps(answer) {
+  const map = {
+    'React': {
+      devDeps: [],
+      deps: [],
+    },
+    'Vue': {
+      devDeps: [],
+      deps: [],
+    },
+    'Node': {
+      devDeps: [],
+      deps: [],
+    },
+    'Vanilla': {
+      devDeps: [],
+      deps: [],
+    },
+  }
+  dependencise.deps = [
+    ...dependencise.deps,
+    ...map[answer].deps,
+  ]
+  dependencise.devDeps = [
+    ...dependencise.devDeps,
+    ...map[answer].devDeps,
+  ]
+}
 
-      if (finalDevDeps.length) {
-        await execa("npm", ["install", "--save-dev", ...finalDevDeps]);
-      }
-    });
+async function initAction() {
+  const { framework } = await askFramework()
+  const { typescript } = await askTypescript()
+  const { eslint } = await askESLint()
+
+  if (eslint) {
+    const { eslintStyle } = await askESLintStyle()
+    theAnswer.eslintStyle = eslintStyle
+  }
+
+  const { stylelint } = await askStylelint()
+  const { prettier } = await askPrettier()
+  const { husky } = await askHusky()
+
+  theAnswer = {
+    ...theAnswer,
+    framework,
+    typescript,
+    eslint,
+    stylelint,
+    prettier,
+    husky,
+  }
+
+  console.log(theAnswer);
+  // Object.keys(theAnswer).forEach((key) => {
+  // })
+  generateFrameworkDeps()
+
+
+  // inquirer.prompt([
+  //     {
+  //       type: 'confirm',
+  //       name: 'husky',
+  //       message: 'husky?',
+  //     },
+  //     {
+  //       type: 'confirm',
+  //       name: 'lint-staged',
+  //       message: 'lint-staged?',
+  //     },
+  //     {
+  //       type: "list",
+  //       name: "tsconfig",
+  //       message:
+  //         "tsconfig.json? Choose and install typescript or not. If your dependencies doesn't have typescript and it will be install.",
+  //       choices: ["No", "JavaScript", "Node"],
+  //       default: "No",
+  //     },
+  //   ])
+    // .then(async (answers) => {
+    //   const { tsconfig, husky } = answers;
+
+    //   if (!fs.existsSync(pkgFilePath)) {
+    //     chalk.red('This project initial not yet by npm init. Please execute command `npm init`')
+    //     return
+    //   }
+
+    //   let finalDeps = [];
+    //   let finalDevDeps = [];
+
+    //   if (husky) {
+    //     finalDevDeps = ["husky"];
+    //   }
+
+    //   let tsDeps = {};
+    //   if (tsconfig && tsconfig !== "No") {
+    //     tsDeps = getTsDependencies(tsconfig === "Node");
+    //   }
+    //   console.log(tsDeps);
+
+    //   if (Reflect.has(tsDeps, "depArgs") && tsDeps.depArgs.length) {
+    //     finalDeps = [...finalDeps, ...tsDeps.depArgs];
+    //   }
+
+    //   if (Reflect.has(tsDeps, "devDepArgs") && tsDeps.devDepArgs.length) {
+    //     finalDevDeps = [...finalDevDeps, ...tsDeps.devDepArgs];
+    //   }
+
+    //   if (finalDeps.length) {
+    //     await execa("npm", ["install", "--save", ...finalDeps]);
+    //   }
+
+    //   if (finalDevDeps.length) {
+    //     await execa("npm", ["install", "--save-dev", ...finalDevDeps]);
+    //   }
+    // });
 }
 
 module.exports = initAction;
