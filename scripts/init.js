@@ -4,7 +4,7 @@ const path = require("path");
 const execa = require("execa");
 const chalk = require('chalk')
 
-const pkgFilePath = path.resolve(__dirname, '..', "./package.json")
+const pkgFilePath = path.resolve(process.cwd(), "./package.json")
 const hasPackageJson = fs.existsSync(pkgFilePath)
 const dependencise = {
   devDeps: [],
@@ -70,7 +70,12 @@ async function askFramework() {
       type: 'list',
       name: 'framework',
       message: 'What framework your?',
-      choices: ['React', 'Vue', 'Node', 'Vanilla'],
+      choices: [
+        'React',
+        // 'Vue',
+        // 'Node',
+        // 'Vanilla'
+      ],
       default: 'Vanilla',
     },
   ])
@@ -138,10 +143,12 @@ async function askHusky() {
   ])
 }
 
-function generateFrameworkDeps(answer) {
+function generateTSDeps(answer) {
   const map = {
     'React': {
-      devDeps: [],
+      devDeps: [
+        '@types/react',
+      ],
       deps: [],
     },
     'Vue': {
@@ -157,6 +164,7 @@ function generateFrameworkDeps(answer) {
       deps: [],
     },
   }
+
   dependencise.deps = [
     ...dependencise.deps,
     ...map[answer].deps,
@@ -167,7 +175,59 @@ function generateFrameworkDeps(answer) {
   ]
 }
 
+function generateESLintDeps(answer) {
+  dependencise.devDeps.push('eslint')
+
+  const prettierWithESLint = [
+    'eslint-config-prettier',
+    'eslint-plugin-prettier',
+  ]
+  const airbnbWithESLint = [
+    'eslint-config-airbnb',
+    'eslint-config-airbnb-typescript',
+  ]
+  const reactWithESLint = [
+    'eslint-plugin-react',
+    'eslint-plugin-jsx-a11y',
+    'eslint-plugin-react-hooks',
+    'eslint-plugin-import', // TODO: under nodejs project?
+  ]
+  const tsWithESLint = [
+    '@typescript-eslint/eslint-plugin',
+    '@typescript-eslint/parser',
+  ]
+
+  const handler = (configArr) => {
+    dependencise.devDeps = [
+      ...dependencise.devDeps,
+      ...configArr,
+    ]
+  }
+
+  if (theAnswer.framework === 'React') {
+    handler(reactWithESLint)
+  }
+
+  if (theAnswer.typescript) {
+    handler(tsWithESLint)
+  }
+
+  if (theAnswer.eslintStyle === 'airbnb') {
+    handler(airbnbWithESLint)
+  }
+
+  if (theAnswer.prettier) {
+    handler(prettierWithESLint)
+  }
+}
+
 async function initAction() {
+  if (!theAnswer.hasPackageJson) {
+    console.log('please run `npm init` first.');
+    chalk.red('please run `npm init` first.');
+    return
+  }
+
   const { framework } = await askFramework()
   const { typescript } = await askTypescript()
   const { eslint } = await askESLint()
@@ -191,10 +251,13 @@ async function initAction() {
     husky,
   }
 
-  console.log(theAnswer);
-  // Object.keys(theAnswer).forEach((key) => {
-  // })
-  generateFrameworkDeps()
+  if (typescript) {
+    generateTSDeps(theAnswer.framework)
+  }
+  if (eslint) {
+    generateESLintDeps()
+  }
+
 
 
   // inquirer.prompt([
