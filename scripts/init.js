@@ -176,7 +176,7 @@ function generateTSDeps(answer) {
 }
 
 function generateESLintDeps(answer) {
-  dependencise.devDeps.push('eslint')
+  dependencies.devDeps.push('eslint')
 
   const prettierWithESLint = [
     'eslint-config-prettier',
@@ -198,8 +198,8 @@ function generateESLintDeps(answer) {
   ]
 
   const handler = (configArr) => {
-    dependencise.devDeps = [
-      ...dependencise.devDeps,
+    dependencies.devDeps = [
+      ...dependencies.devDeps,
       ...configArr,
     ]
   }
