@@ -221,6 +221,32 @@ function generateESLintDeps(answer) {
   }
 }
 
+function generateTsJsonFile() {
+  let prefix = ''
+  switch (theAnswer.framework) {
+    case 'React':
+    default:
+      prefix = 'javascript'
+      break;
+    case 'Node':
+      prefix = 'node'
+      break;
+  }
+
+  const configPath = path.resolve(__dirname, '..', `lib/config/${prefix}.tsconfig.json`)
+  const alreadyPath = path.resolve(process.cwd(), './tsconfig.json')
+  const configFile = JSON.parse(fs.readFileSync(configPath, {
+    encoding: "utf8",
+  }))
+  const alreadyTsJsonFile = fs.existsSync(alreadyPath)
+  let alreadyConfigFile = {}
+  if (alreadyTsJsonFile) {
+    alreadyConfigFile = JSON.parse(fs.readFileSync(alreadyPath, { encoding: "utf8" }))
+  }
+
+  console.log(alreadyTsJsonFile, alreadyConfigFile);
+}
+
 async function initAction() {
   if (!theAnswer.hasPackageJson) {
     console.log('please run `npm init` first.');
@@ -258,7 +284,9 @@ async function initAction() {
     generateESLintDeps()
   }
 
-
+  if (typescript) {
+    generateTsJsonFile()
+  }
 
   // inquirer.prompt([
   //     {
