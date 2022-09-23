@@ -1,0 +1,17 @@
+{
+	"extends": [
+		"eslint:recommended"
+	],
+	"env": {
+		"es6": true
+	},
+	"parser": "",
+	"parserOptions": {
+		"ecmaFeatures": {},
+		"ecmaVersion": "latest",
+		"sourceType": "module",
+		"project": ["./tsconfig.json"]
+	},
+	"plugins": [],
+	"rules": {}
+}
