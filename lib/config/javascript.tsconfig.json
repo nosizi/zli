@@ -24,7 +24,7 @@
       "dom",
       "dom.iterable"
     ],
-    "path": {
+    "paths": {
       "@/*": [
         "src/*"
       ]
