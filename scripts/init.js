@@ -94,8 +94,10 @@ class Initial {
     }
     console.log(this.dependencies);
 
-    // write dependencies to package.json
-    // this.writePackageJSON()
+    // add husky
+    if (husky) {
+      this.generateHusky()
+    }
 
     // install dependencies
     this.installDependencies()
@@ -329,7 +331,13 @@ class Initial {
   }
 
   // maybe run it after pkgManager install
-  static async generateHusky() {
+  static generateHusky() {
+    const { pkgManager } = this.theAnswer
+    // const installCommand = pkgManager === 'yarn' ? 'add' : 'install'
+    const useYarn = pkgManager === 'yarn'
+    // install husky
+    spawn.sync('npx', ['husky-init'])
+    spawn.sync(pkgManager, [useYarn ? '' : 'install'])
 
   }
 
